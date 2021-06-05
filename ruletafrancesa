@@ -2,7 +2,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class RuletaFrancesa {
-	/* Reglas Ruleta Francesa:
+	/*  Reglas Ruleta Francesa:
 	• si gana jugador con apuestas multiples(Passe/Manque/Par/Impar/Negro/Rojo) gana el 50% de lo apostado
 	• si gana jugador con apuesta en las columnas gana el 75% de lo apostado
 	• si gana jugador con apuesta en los numeros gana lo apostado
