@@ -1,0 +1,321 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class RuletaFrancesa {
+	/* Reglas Ruleta Francesa:
+	• si gana jugador con apuestas multiples(Passe/Manque/Par/Impar/Negro/Rojo) gana el 50% de lo apostado
+	• si gana jugador con apuesta en las columnas gana el 75% de lo apostado
+	• si gana jugador con apuesta en los numeros gana lo apostado
+	• nº0: el jugador pierde la 50% apuesta*/
+	
+	
+	//nºrojos
+	static final int Rojos[]= {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}; 
+	//nºnegros
+	static final int Negros[]= {2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35};
+	
+	
+	public static void main(String[] args) {
+		double dineroDisponible;
+		int opcionApuesta;
+		int opcionTipoApuesta;
+		double dineroApuesta;
+		Scanner sc= new Scanner(System.in);
+		
+		//Menu Bienvenida		
+		dineroDisponible= menuBienvenida(sc);
+		
+		do {
+			//Menu Principal
+			opcionApuesta= menuPrincipal(sc, dineroDisponible);
+			
+			if(opcionApuesta==1) {
+				//Menu Apuesta
+				opcionTipoApuesta= menuApuesta(sc);
+				dineroApuesta= dineroApostado(sc, dineroDisponible);
+
+				switch(opcionTipoApuesta) {
+					case 1:
+						//Apuesta por color
+						 dineroDisponible= apuestaColor(sc,dineroDisponible, dineroApuesta);
+						break;
+					case 2:
+						//Apuesta por manque
+						dineroDisponible= apuestaManque(sc,dineroDisponible, dineroApuesta);
+						break;
+					case 3:
+						//Apuesta por passe
+						dineroDisponible= apuestaPasse(sc,dineroDisponible, dineroApuesta);
+						break;
+					case 4:
+						//Apuesta por nºpar/Impar
+						dineroDisponible= apuestaParImpar(sc,dineroDisponible, dineroApuesta);
+						break;
+					case 5:
+						//Apuesta por nºcolumna
+						dineroDisponible= apuestaColumna(sc,dineroDisponible, dineroApuesta);
+						break;
+					case 6:
+						//Apuesta por numero
+						dineroDisponible= apuestaNumero(sc,dineroDisponible, dineroApuesta);
+						break;
+				}
+				
+			} else {
+				if(dineroDisponible <= 0) {
+					System.out.println("Lo sentimos pero no tiene dispone de dinero para apostar");
+				} else {
+					System.out.println("Gracias por jugar con nosotros");
+				}
+			}
+		} while ((opcionApuesta!=0) && (dineroDisponible!=0));
+		
+		System.out.println("Gracias por jugar en el casino");
+		System.out.println("Vuelva cuando quiera");
+		
+	}
+
+	
+	
+	
+	//Menu Bienvenida
+	public static double menuBienvenida(Scanner sc) {
+		double dineroInicial;
+		
+		System.out.println("Bienvenido a la RuletaFrancesa del gran casino");
+		System.out.println("¿Con cuanto dinero desea comenzar?");
+		dineroInicial= sc.nextDouble();
+		return dineroInicial;
+	}
+	
+	
+	//Menu Principal
+	public static int menuPrincipal(Scanner sc, double dineroDisponible) {
+		int opcionApuesta;
+		
+		System.out.println("Dispone de : "+ dineroDisponible);
+		System.out.println("¿Desea apostar?");
+		System.out.println("• Introduzca 1 para apostar");
+		System.out.println("• Introduzca 0 para salir");
+		opcionApuesta= sc.nextInt();
+		return opcionApuesta;
+	}
+	
+	
+	//Menu Apuestas
+	public static int menuApuesta(Scanner sc) {
+		int opcionTipoApuesta;
+		System.out.println("Dispone de varias opciones de apuesta : ");
+		System.out.println("• Introduzca 1 para apuestar por color(Rojo o Negro).");
+		System.out.println("• Introduzca 2 para apuestar por manque(nº1 al nº18).");
+		System.out.println("• Introduzca 3 para apuestar por passe(nº19 al nº36).");
+		System.out.println("• Introduzca 4 para apuestar por nºpares o nºimpares.");
+		System.out.println("• Introduzca 5 para apuestar por nºcolumna(cº1, cº2 o cº3).");
+		System.out.println("• Introduzca 6 para apuestar por numero(nº1 al nº36).");
+		System.out.println("¿A que desea apostar?");	
+		opcionTipoApuesta= sc.nextInt();
+		return opcionTipoApuesta;
+	}
+	
+	
+	//Dinero Apostado
+	public static double dineroApostado(Scanner sc,double dineroDisponible) {
+		double dineroApuesta;
+		do {
+			System.out.println("Dispone de : "+ dineroDisponible);
+			System.out.println("¿Cuanto dinero desea apostar?");
+			dineroApuesta= sc.nextDouble();
+			if(dineroApuesta > dineroDisponible) {
+				System.out.println("Lo siento pero no dispone de esa cantidad para apostar");
+			}
+		} while (dineroApuesta > dineroDisponible);
+		return dineroApuesta;
+	}
+	
+	
+	/*Apuesta por color
+	• si gana jugador con apuestas multiples(Passe/Manque/Par/Impar/Negro/Rojo) gana el 50% de lo apostado*/
+	public static double apuestaColor(Scanner sc, double dineroDisponible, double dineroApuesta) {
+		int opcionColor;
+		int numRuleta;
+		boolean existe=false;
+		do {
+			System.out.println("¿A que color desea apostar Rojo o Negro?");
+			System.out.println("• Introduzca 1 para apostar por Rojo.");
+			System.out.println("• Introduzca 2 para apostar por Negro.");
+			opcionColor= sc.nextInt();
+			numRuleta= numeroRuleta();
+		
+			switch (opcionColor){
+			case 1:
+				//Color Rojo
+				existe= comprobarApuestaColor(numRuleta, Rojos);
+				break;
+			case 2:
+				//Color Negro
+				existe= comprobarApuestaColor(numRuleta, Negros);
+				break;
+			default:
+				System.out.println("Error al introducir opción");
+				break;
+			}
+		} while (opcionColor>2);
+		
+		return comprobarResultado(existe, dineroDisponible, 50, dineroApuesta, numRuleta); 
+	}
+	
+	//Comprobar Apuesta por Color
+	public static boolean comprobarApuestaColor(int numRuleta, int listaValidos[]) {
+		boolean existe=false;
+		for (int i=0; i< listaValidos.length; i++) {
+			if (numRuleta==listaValidos[i]) {
+				existe=true;
+				return existe;
+			} 
+		}
+		return existe;
+	}
+	
+
+	/*Apuesta por manque(nº1-nº18)
+	 * • si gana jugador con apuestas multiples(Passe/Manque/Par/Impar/Negro/Rojo) gana el 50% de lo apostado*/
+	public static double apuestaManque(Scanner sc, double dineroDisponible, double dineroApuesta) {
+		int numRuleta;
+		numRuleta= numeroRuleta();
+		
+		if ((numRuleta>=1)&&(numRuleta<=18)) {
+			return comprobarResultado(true, dineroDisponible, 50, dineroApuesta, numRuleta);
+		} else {
+			return comprobarResultado(false, dineroDisponible, 50, dineroApuesta, numRuleta);
+		}
+	}
+	
+	
+	/*Apuesta por passe(nº19-nº36)
+	 * • si gana jugador con apuestas multiples(Passe/Manque/Par/Impar/Negro/Rojo) gana el 50% de lo apostado*/
+	public static double apuestaPasse(Scanner sc, double dineroDisponible, double dineroApuesta) {
+		int numRuleta;
+		numRuleta= numeroRuleta();
+		
+		if ((numRuleta>=19)&&(numRuleta<=36)) {
+			return comprobarResultado(true, dineroDisponible, 50, dineroApuesta, numRuleta);
+		} else {
+			return comprobarResultado(false, dineroDisponible, 50, dineroApuesta, numRuleta);
+		}
+	}
+	
+	
+	/*Apuesta por nºpar/Impar
+	• si gana jugador con apuestas multiples(Passe/Manque/Par/Impar/Negro/Rojo) gana el 50% de lo apostado*/
+	public static double apuestaParImpar(Scanner sc, double dineroDisponible, double dineroApuesta) {
+		int opcionParImpar;
+		int numRuleta;
+		boolean existe=false;
+		do {
+			System.out.println("¿A que numero desea apostar Par o Impar?");
+			System.out.println("• Introduzca 1 para apostar por Par.");
+			System.out.println("• Introduzca 2 para apostar por Impar.");
+			opcionParImpar= sc.nextInt();
+			numRuleta= numeroRuleta();
+		
+			switch (opcionParImpar){
+			case 1:
+				//nºPar
+				if (numRuleta%2==0) {
+					return comprobarResultado(true, dineroDisponible, 50, dineroApuesta, numRuleta);
+				} else {
+					return comprobarResultado(false, dineroDisponible, 50, dineroApuesta, numRuleta);
+				}
+			case 2:
+				//nºImpar
+				if (numRuleta%2==1) {
+					return comprobarResultado(true, dineroDisponible, 50, dineroApuesta, numRuleta);
+				} else {
+					return comprobarResultado(false, dineroDisponible, 50, dineroApuesta, numRuleta);
+				}
+			default:
+				System.out.println("Erro al introducir opción");
+				break;
+			}
+		} while (opcionParImpar>2);
+		
+		return comprobarResultado(existe, dineroDisponible, 50, dineroApuesta, numRuleta);
+	}
+	
+
+	/*Apuesta por nºcolumna
+	• si gana jugador con apuesta en las columnas gana el 75% de lo apostado*/
+	public static double apuestaColumna(Scanner sc, double dineroDisponible, double dineroApuesta) {
+		int numRuleta;
+		int opcionColumna;
+		boolean existe= false;
+		System.out.println("¿A que columna desea apostar?");
+		System.out.println("• Introduzca 1 para apostar por la columna nº1.");
+		System.out.println("• Introduzca 2 para apostar por la columna nº2.");
+		System.out.println("• Introduzca 3 para apostar por la columna nº3.");
+		opcionColumna= sc.nextInt();
+		numRuleta= numeroRuleta();
+		
+		existe= comprobarResultadoColumna(numRuleta, opcionColumna);
+		return comprobarResultado(existe, dineroDisponible, 75, dineroApuesta, numRuleta);
+	}
+	
+	//comprobar Resultado Columna
+	public static boolean comprobarResultadoColumna(int numRuleta, int opcionColumna) {
+		boolean existe= false;
+		for ( int j=opcionColumna; j<=36; j=+3) {
+			if (j==numRuleta) {
+				existe=true;
+				return existe;
+			}
+		}
+		return existe;
+	}
+	
+	
+	/*Apuesta por numero
+	 * 	• si gana jugador con apuesta en los numeros gana lo apostado*/
+	public static double apuestaNumero(Scanner sc, double dineroDisponible, double dineroApuesta) {
+		int numRuleta;
+		int numUsuario;
+		System.out.println("¿A que numero desea apostar?");
+		numUsuario= sc.nextInt();
+		numRuleta= numeroRuleta();
+		
+		if (numRuleta==numUsuario) {
+			return comprobarResultado(true, dineroDisponible, 100, dineroApuesta, numRuleta);
+		} else {
+			return comprobarResultado(false, dineroDisponible, 100, dineroApuesta, numRuleta);
+		}
+	}
+	
+	
+	//nºRuleta
+	public static int numeroRuleta() {
+		int numRuleta;
+		Random ruleta = new Random();
+		numRuleta= ruleta.nextInt(36+1);
+		System.out.println("Numero Ruleta : "+ numRuleta);
+		return numRuleta;
+	}
+	
+	
+	//Comprobar Resultado
+	public static double comprobarResultado(boolean victoria, double dineroDisponible, int porcentaje, double dineroApuesta, int numeroRuleta) {
+		if(numeroRuleta!=0) {
+			if(victoria==true){
+				System.out.println("Felicidades!! Usted gana");
+				dineroDisponible+= ((dineroApuesta*porcentaje)/100);
+			} else {
+				System.out.println("Lo sentimos usted pierde");
+				dineroDisponible-=dineroApuesta;
+			}
+			System.out.println("Su saldo actual es : "+ dineroDisponible);
+		} else {
+			System.out.println("Lo sentimos ha salido el numero especial casino Barbara");
+			dineroDisponible-= ((dineroApuesta*50)/100);
+		}
+		return dineroDisponible;
+	}
+	
+}
